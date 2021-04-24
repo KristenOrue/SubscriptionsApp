@@ -6,6 +6,7 @@
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
 # Movie.create(title: "The Matrix", video_url: "secret")
+# Plan.destroy_all
 
 Plan.create(name: "Small", stripe_id: "small-monthly", amount: 25_00, interval: "month")
 Plan.create(name: "Small", stripe_id: "small-annual", amount: 250_00, interval: "year")
