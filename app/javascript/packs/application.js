@@ -18,3 +18,28 @@ $(document).on("turbolinks:load", () => {
   $('[data-toggle="tooltip"]').tooltip()
   $('[data-toggle="popover"]').popover()
 })
+
+document.addEventListener("turbolinks:load", () => {
+  let cardElement = document.querySelector("#card-element")
+
+  if (cardElement !== null) { setupStripe() }
+})
+
+function setupStripe() {
+  const stripe_key = document.querySelector("meta[name='stripe-key']").getAttribute("content")
+  const stripe = Stripe(stripe_key)
+
+  const elements = stripe.elements()
+  const card = elements.create('card')
+  card.mount('#card-element')
+
+  var displayError = document.getElementById('card-errors')
+
+  card.addEventListener('change', (event) => {
+    if (event.error) {
+      displayError.textContent = event.error.message
+    }else {
+      displayError.textContent = ''
+    }
+  })
+}
