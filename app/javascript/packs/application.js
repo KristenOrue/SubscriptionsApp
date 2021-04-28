@@ -38,8 +38,46 @@ function setupStripe() {
   card.addEventListener('change', (event) => {
     if (event.error) {
       displayError.textContent = event.error.message
-    }else {
+    } else {
       displayError.textContent = ''
     }
   })
+
+  const form = document.querySelector("#payment-form")
+  form.addEventListener('submit', (event) => {
+    event.preventDefault()
+
+    let name = form.querySelector('#name_on_card').nodeValue
+    let data = {
+      payment_method_data: {
+        card: card,
+        billing_details: {
+          name: name,
+        }
+      }
+    }
+
+    //Complete a payment Intent
+
+    //Updating a card or subscribing with a trial (using a SetupIntent)
+
+    // Subscribing with no trial 
+    data.payment_method_data.type = 'card'
+    stripe.createPaymentMethod(data.payment_method_data).then((result) => {
+      if (result.error) {
+        displayError.textContent = result.error.message
+      } else {
+        addHiddenField(form, "payment_method_id", result.paymentMethod.id)
+        form.submit()
+      }
+    })
+  })
+}
+
+function addHiddenField(form, name, value){
+  let hiddenInput = document.createElement("input")
+  hiddenInput.setAttribute("type", "hidden")
+  hiddenInput.setAttribute("name", name)
+  hiddenInput.setAttribute("value", value)
+  form.appendChild(hiddenInput)
 }
