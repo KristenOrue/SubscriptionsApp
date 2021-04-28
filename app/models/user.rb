@@ -67,7 +67,7 @@ class User < ApplicationRecord
         email: email,
         name: name,
       )
-      update(stripe_id: customer_id)
+      update(stripe_id: customer.id)
       customer
     end
   end
