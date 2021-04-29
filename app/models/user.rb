@@ -3,7 +3,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :masqueradable, :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable, :omniauthable
 
-  # has_one_attached :avatar
+  has_one_attached :avatar
   has_person_name
 
   has_many :notifications, foreign_key: :recipient_id
@@ -21,7 +21,7 @@ class User < ApplicationRecord
 
     args = {
       customer: stripe_id,
-      items: [{ plan: plan }],
+      items: [{price: plan.stripe_price_id}],
       expand: ['latest_invoice.payment_intent'],
       off_session: true,
     }.merge(options)
@@ -32,7 +32,7 @@ class User < ApplicationRecord
 
     subscription = subscriptions.create(
       stripe_id: sub.id,
-      stripe_plan: plan,
+      stripe_plan: plan.stripe_id,
       status: sub.status,
       trial_ends_at: (sub.trial_end ? Time.at(sub.trial_end) : nil),
       ends_at: nil, 
@@ -55,7 +55,7 @@ class User < ApplicationRecord
       card_brand: payment_method.card.brand.titleize,
       card_last4: payment_method.card.last4,
       card_exp_month: payment_method.card.exp_month,
-      card_exp_year: payment_method.card.card_exp_year,
+      card_exp_year: payment_method.card.exp_year,
     )
   end
 
