@@ -61,7 +61,7 @@ function setupStripe() {
 
     //Updating a card or subscribing with a trial (using a SetupIntent)
 
-    // Subscribing with no trial 
+    //Subscribing with no trial 
     data.payment_method_data.type = 'card'
     stripe.createPaymentMethod(data.payment_method_data).then((result) => {
       if (result.error) {

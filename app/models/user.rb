@@ -13,12 +13,15 @@ class User < ApplicationRecord
   has_many :charges
 
   def subscribed?
-    false
+    subscription && subscription.active?
+  end
+
+  def subscription
+    subscriptions.last
   end
 
   def subscribe(plan, options={})
     stripe_customer if !stripe_id?
-
     args = {
       customer: stripe_id,
       items: [{price: plan.stripe_price_id}],
