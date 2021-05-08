@@ -44,6 +44,21 @@ function setupStripe() {
   })
 
   const form = document.querySelector("#payment-form")
+  let paymentIntentId = form.dataset.paymentIntent
+
+  if (paymentIntentId) {
+    if (form.dataset.status == "requires_action") {
+      stripe.confirmCardPayment(paymentIntentId, { setup_future_usage: 'off_session' }).then((result) => {
+        if (result.error) {
+          displayError.textContent = result.error.message
+          form.querySelector("#card-details").classList.remove("d-none")
+        } else {
+          form.submit()
+        }
+      })
+    }
+  }
+
   form.addEventListener('submit', (event) => {
     event.preventDefault()
 
@@ -58,19 +73,34 @@ function setupStripe() {
     }
 
     //Complete a payment Intent
-
+    if (paymentIntentId){
+      stripe.confirmCardPayment(paymentIntentId, {
+        payment_method: data.payment_method_data,
+        setup_future_usage: 'off_session',
+        save_payment_method: true,
+      }).then((result) => {
+        if (result.error) {
+          displayError.textContent = result.error.message
+          form.querySelector("#card-details").classList.remove("d-none")
+        } else {
+          form.submit()
+        }
+      })
+  
     //Updating a card or subscribing with a trial (using a SetupIntent)
 
+    } else {
     //Subscribing with no trial 
-    data.payment_method_data.type = 'card'
-    stripe.createPaymentMethod(data.payment_method_data).then((result) => {
-      if (result.error) {
-        displayError.textContent = result.error.message
-      } else {
-        addHiddenField(form, "payment_method_id", result.paymentMethod.id)
-        form.submit()
-      }
-    })
+      data.payment_method_data.type = 'card'
+      stripe.createPaymentMethod(data.payment_method_data).then((result) => {
+        if (result.error) {
+          displayError.textContent = result.error.message
+        } else {
+          addHiddenField(form, "payment_method_id", result.paymentMethod.id)
+          form.submit()
+        }
+      })
+    }
   })
 }
 
