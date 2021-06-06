@@ -23,7 +23,6 @@ class Subscription < ApplicationRecord
 
   def swap(plan)
     stripe_sub = stripe_subscription
-    
     args = {
       cancel_at_period_end: false,
       items: [
